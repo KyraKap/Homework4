@@ -24,12 +24,13 @@ help(lapply)
 
 ```{r}
 # Making sure to specify  method = "kendall" correctly
+# COMMENTING OUT BECAUSE OF THE RENDER NOT WORKING
 
-lapply(X = my_list, FUN = cor, method = "kendall")
+# lapply(X = my_list, FUN = cor, method = "kendall")
 
-my_function <- function(x, FUN, method) {
-  lapply(X = my_list, FUN = cor, method = "kendall")
-}
+# my_function <- function(x, FUN, method) {
+#  lapply(X = my_list, FUN = cor, method = "kendall")
+#}
 ```
 
 ## What are two advantages of using purrr functions instead of the BaseR apply family?
@@ -224,9 +225,11 @@ wrapper_fun(resp_as_df, pred, TRUE)
 # Task 3
 
 ```{r}
+
+# COMMENTING OUT BECAUSE OF THE RENDER NOT WORKING
 # f721aee04c874f9aa2097bcb7c5495cc
 
-install.packages("httr")
+# install.packages("httr")
 ```
 
 ```{r}
@@ -269,12 +272,13 @@ Url_ncsu <- "https://newsapi.org/v2/everything?q=ncsu&from=2024-06-26&sortBy=pop
 
 ```{r}
 
+# COMMENTING OUT BECAUSE OF THE RENDER NOT WORKING
 # parse the information
 
-ncsu_return <- httr::GET(Url_ncsu) 
-parsed_ncsu <- fromJSON(rawToChar(ncsu_return$content)) 
-ncsu <- as_tibble(parsed_ncsu$data)
-ncsu
+# ncsu_return <- httr::GET(Url_ncsu) 
+# parsed_ncsu <- fromJSON(rawToChar(ncsu_return$content)) 
+# ncsu <- as_tibble(parsed_ncsu$data)
+# ncsu
 ```
 
 ```{r}
@@ -284,7 +288,7 @@ library(dplyr)
 ```{r}
 #what my function might hypothetically look like if i did the above correctly!
 
-ncsu |>   
-  select(column1, column2, everything())
+# ncsu |>   
+#  select(column1, column2, everything())
 ```
 
