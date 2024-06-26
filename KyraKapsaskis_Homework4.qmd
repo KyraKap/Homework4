@@ -1,0 +1,290 @@
+---
+title: "ST558 Homework 4"
+author: "Kyra Kapsaskis"
+format: html
+editor: visual
+---
+
+# Task 1: Conceptual Questions
+
+## What is the purpose of lapply() ?
+
+to apply a function to every element of a list
+
+## What is the equivalent purrr function?
+
+map()
+
+## Write the code that would apply the given function to an entire list of numeric data frames, using the lapply().
+
+```{r}
+help(lapply)
+```
+
+
+```{r}
+# Making sure to specify  method = "kendall" correctly
+
+lapply(X = my_list, FUN = cor, method = "kendall")
+
+my_function <- function(x, FUN, method) {
+  lapply(X = my_list, FUN = cor, method = "kendall")
+}
+```
+
+## What are two advantages of using purrr functions instead of the BaseR apply family?
+
+they are more efficient, less notation/shorter syntax, more consistent than apply
+
+## what is a side-effect function?
+
+it doesn't try to change the data, it just tries to produce something. example is print() or plot(). not a transformation function that changes the data.
+
+## Why can you name a variable sd in a function and not cause any issues with the sd function?
+
+global functions can't be coerced or changed.  
+------------------------------------------------------------------------
+
+# Task 2 - Writing R Functions
+
+## writing a basic function called getRMSE() that takes in a vector of responses, a vector of predictions, and outputs the RMSE.
+
+```{r}
+
+# if a value is missing in the responses, allow for additional arguments to the mean() function that removes the NA from the computation
+
+# putting this function here
+
+getRMSE <- function(vector_obs, vector_pred, ...) {
+  RMSE <- mean((vector_obs - vector_pred)^2, ...) |>
+    sqrt()
+  return(RMSE)
+  
+}
+```
+
+## run the following code
+
+```{r}
+set.seed(10)
+n <- 100
+x <- runif(n)
+resp <- 3 + 10*x + rnorm(n)
+pred <- predict(lm(resp ~ x), data.frame(x))
+```
+
+### using the data that we just created, let's test the RMSE function that I just made above.
+
+```{r}
+getRMSE(resp, pred)
+```
+
+### now test it again but replace two response values with missing values (NA_real\_).
+
+```{r}
+print(resp)
+```
+
+```{r}
+help(replace)
+
+# creating an index vector
+missing_values <- c(1,2)
+```
+
+```{r}
+resp_w_na <- replace(resp, missing_values, NA_real_)
+```
+
+```{r}
+print(resp_w_na)
+```
+
+```{r}
+
+# same function but with specifying what to do with missing values.
+
+getRMSE_w_arg <- function(vector_obs, vector_pred, na.rm = TRUE) {
+  RMSE <- mean((vector_obs - vector_pred)^2, na.rm = na.rm) |>
+    sqrt()
+  return(RMSE)
+  
+}
+```
+
+```{r}
+rmse_w_na <- getRMSE_w_arg(resp_w_na, pred)
+```
+
+```{r}
+print(rmse_w_na)
+```
+
+### OK now let's test it again without specifying the behavior for missing values, to see what happens.
+
+```{r}
+getRMSE(resp_w_na, pred)
+```
+
+## now create another function following the same specifications called getMAE()
+
+```{r}
+getMAE <- function(vector_obs, vector_pred, ...) {
+  MAE <- mean(abs(vector_obs - vector_pred), ...)
+  return(MAE)
+  
+}
+```
+
+## running some new code to get some new data
+
+```{r}
+set.seed(10)
+n <- 100
+x <- runif(n)
+resp <- 3 + 10*x + rnorm(n)
+pred <- predict(lm(resp ~ x), data.frame(x))
+```
+
+### test the MAE function using this new data that was just created
+
+```{r}
+getMAE(resp, pred)
+```
+
+```{r}
+
+# creating the new function with specified extra argument
+
+getMAE_w_arg <- function(vector_obs, vector_pred, na.rm = TRUE) {
+  MAE <- mean(abs(vector_obs - vector_pred), na.rm = na.rm)
+  return(MAE)
+  
+}
+```
+
+```{r}
+# data is the same as before
+
+print(resp_w_na)
+```
+
+```{r}
+MAE_w_na <- getMAE_w_arg(resp_w_na, pred)
+```
+
+```{r}
+print(MAE_w_na)
+```
+
+```{r}
+getMAE_w_arg(resp, pred)
+```
+
+## creating a wrapper function - a single function call to get either or both metrics.
+
+```{r}
+wrapper_fun <- function(vector_obs, vector_pred, na.rm = TRUE) {
+  getMAE_w_arg(vector_obs, vector_pred, na.rm = TRUE)
+  getRMSE_w_arg(vector_obs, vector_pred, na.rm = TRUE)
+
+}
+```
+
+```{r}
+set.seed(10)
+n <- 100
+x <- runif(n)
+resp <- 3 + 10*x + rnorm(n)
+pred <- predict(lm(resp ~ x), data.frame(x))
+```
+
+```{r}
+wrapper_fun(resp_w_na, pred, TRUE)
+```
+
+```{r}
+wrapper_fun(resp, pred, TRUE)
+```
+
+```{r}
+# creating a data frame to test the function
+
+resp_as_df <- as.data.frame(resp_w_na)
+```
+
+```{r}
+# it doesn't work with a data frame 
+
+wrapper_fun(resp_as_df, pred, TRUE)
+```
+
+------------------------------------------------------------------------
+
+# Task 3
+
+```{r}
+# f721aee04c874f9aa2097bcb7c5495cc
+
+install.packages("httr")
+```
+
+```{r}
+library(httr)
+```
+
+```{r}
+help("GET")
+```
+
+
+```{r}
+
+# trying to find information about nc state
+# building our url
+
+library(httr)
+
+build_url <- GET("https://newsapi.org/v2/everything",
+                query = list(
+                  q = "ncsu",
+                  from = "2024-06-26",
+                  sortBy = "popularity",
+                  apiKey = "f721aee04c874f9aa2097bcb7c5495cc"
+                ))
+```
+
+```{r}
+print(build_url)
+```
+```{r}
+library(tidyr)
+```
+
+```{r}
+# create an object for the url
+
+Url_ncsu <- "https://newsapi.org/v2/everything?q=ncsu&from=2024-06-26&sortBy=popularity&apiKey=f721aee04c874f9aa2097bcb7c5495cc"
+```
+
+```{r}
+
+# parse the information
+
+ncsu_return <- httr::GET(Url_ncsu) 
+parsed_ncsu <- fromJSON(rawToChar(ncsu_return$content)) 
+ncsu <- as_tibble(parsed_ncsu$data)
+ncsu
+```
+
+```{r}
+library(dplyr)
+```
+
+```{r}
+#what my function might hypothetically look like if i did the above correctly!
+
+ncsu |>   
+  select(column1, column2, everything())
+```
+
